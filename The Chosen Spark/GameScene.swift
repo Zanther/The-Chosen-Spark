@@ -14,62 +14,104 @@ class GameScene: SKScene {
     var itemsToShow = 4
     var wrongAnswers = 0
     let scoreLabel = SKLabelNode(fontNamed: "Menlo-Bold")
-    let instructionLabel = SKLabelNode( fontNamed: "Menlo-Bold")
+    let levelLabel = SKLabelNode(fontNamed: "Menlo-Bold")
+    var instructionLabel = SKLabelNode(fontNamed: "Menlo-Bold")
     var score = 0 {
         didSet {
             instructionLabel.text = "Rescue the Autobot hidden among the disguised Decepticons!"
-            scoreLabel.text = "Score: \(score) | Level: \(level) "
+            scoreLabel.text = "Score: \(score)"
+            levelLabel.text = "Level: \(level)"
         }
     }
+    // "Rescue the Autobot hidden among the disguised Decepticons!"
     
     var startTime = 0.0
     var restartTime = 0.0
     var timeLabel = SKLabelNode(fontNamed: "Menlo-Bold")
     var isGameRunning = true
     var restartLabel = SKLabelNode(fontNamed: "Menlo-Bold")
+    var xOffset = -180
+    var yOffset = 0
+    var gridX = 9
+    var gridY = 4
     
     override func sceneDidLoad() {
         
         let background = SKSpriteNode(imageNamed: "background-metal")
         background.name = "background"
         background.zPosition = -1
+        background.setScale(2)
         addChild(background)
         
-//        let bgMusic = SKAudioNode(fileNamed: "bg_chosenSpark")
-//        background.addChild(bgMusic)
+        let bgMusic = SKAudioNode(fileNamed: "bg_chosenSpark")
+        background.addChild(bgMusic)
         
-        scoreLabel.fontSize = 20
-        scoreLabel.position = CGPoint(x:-350, y:200)
+        scoreLabel.fontSize = 12
+//        scoreLabel.position = CGPoint(x:-350, y:200)
+        scoreLabel.position = CGPoint(x:-140, y:275)
         scoreLabel.zPosition = 1
         scoreLabel.horizontalAlignmentMode = .left
         
-        timeLabel.fontSize = 20
-        timeLabel.position = CGPoint(x:350, y:230)
+        levelLabel.fontSize = 12
+        levelLabel.position = CGPoint(x:-110, y:295)
+        levelLabel.zPosition = 1
+        scoreLabel.horizontalAlignmentMode = .left
+        
+        timeLabel.fontSize = 42
+        timeLabel.position = CGPoint(x:120, y:275)
         timeLabel.horizontalAlignmentMode = .right
         timeLabel.zPosition = 1
         
-        instructionLabel.fontSize = 15
-        instructionLabel.position = CGPoint(x:-350, y:230)
+        instructionLabel.fontSize = 12
+        instructionLabel.position = CGPoint(x:-140, y:230)
         instructionLabel.zPosition = 1
         instructionLabel.horizontalAlignmentMode = .left
+        instructionLabel.numberOfLines = 0
+        instructionLabel.lineBreakMode = .byWordWrapping
+        instructionLabel.preferredMaxLayoutWidth = UIScreen.main.bounds.width/1.5
         background.addChild(instructionLabel)
         background.addChild(scoreLabel)
+        background.addChild(levelLabel)
         background.addChild(timeLabel)
         
+        print("Max Width", UIScreen.main.bounds.maxX, instructionLabel.text as Any)
+
         createGrid()
         createLevel(withDelay: 2.0)
 
         score = 0
     }
     
-    func createGrid() {
-        let xOffset = -323
-        let yOffset = -220
+    func createSKLabelWithMultipleLines (with textString: String, with labelName: String) -> SKLabelNode {
+        guard let label = self.childNode(withName: labelName) as? SKLabelNode else { return SKLabelNode(fontNamed: "Menlo-Bold")}
+        label.fontName = "Menlo-Bold"
+        label.text = textString
+        label.lineBreakMode = NSLineBreakMode.byWordWrapping
+        label.numberOfLines = 0
+        label.preferredMaxLayoutWidth = UIScreen.main.bounds.maxX
+//        print("Max Width", UIScreen.main.bounds.maxX, label.text)
         
-        for row in 0 ..< 7 {
-            for col in 0 ..< 11 {
+        return label
+    }
+    
+    func createGrid() {
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            xOffset = -200 /*-Int(UIScreen.main.bounds.width / 7)*/
+            yOffset = -575 // -Int(UIScreen.main.bounds.height / 1.75)
+            print("iPhone", "xoffset", xOffset, "yoffset", yOffset)
+        } else {
+            xOffset = -323
+            yOffset = -220
+            gridX = 7
+            gridY = 11
+        }
+        
+        for row in 0 ..< gridX {
+            for col in 0 ..< gridY {
                 let item = SKSpriteNode(imageNamed: "autobot_off")
-                item.position = CGPoint(x: xOffset + (col * 64), y: yOffset + (row * 60))
+                item.position = CGPoint(x: xOffset + (col * 130), y: yOffset + (row * 120))
+//                item.position = CGPoint(x: xOffset + (col * 64), y: yOffset + (row * 60))
+                item.setScale(1.25)
                 addChild(item)
             }
         }
@@ -79,7 +121,7 @@ class GameScene: SKScene {
         if itemsToShow >= 84 {
             print("reached the end, reverse and add a +")
         } else if itemsToShow >= 4 {
-            itemsToShow = itemsToShow + level
+            itemsToShow = 36 //itemsToShow + level
         }
         wrongAnswers = 0
         
@@ -202,8 +244,8 @@ class GameScene: SKScene {
             }
         }
         
-        let scaleUp = SKAction.scale(to: 2, duration: 0.25)
-        let scaleDown = SKAction.scale(to: 1, duration: 0.25)
+        let scaleUp = SKAction.scale(to: 3, duration: 0.25)
+        let scaleDown = SKAction.scale(to: 1.25, duration: 0.25)
         let sequence = SKAction.sequence([scaleUp, scaleDown])
         node.run(sequence)
         
@@ -234,8 +276,8 @@ class GameScene: SKScene {
             }
             
             let timePassed = currentTime - startTime
-            let remainingTime = Int(ceil(10 - timePassed))
-            timeLabel.text = "Time Left: \(remainingTime)"
+            let remainingTime = Int(ceil(30 - timePassed))
+            timeLabel.text = "\(remainingTime)"
             timeLabel.alpha = 1
             
             if remainingTime <= 0 {
