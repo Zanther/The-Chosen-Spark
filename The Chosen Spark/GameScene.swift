@@ -121,7 +121,7 @@ class GameScene: SKScene {
         if itemsToShow >= 84 {
             print("reached the end, reverse and add a +")
         } else if itemsToShow >= 4 {
-            itemsToShow = 36 //itemsToShow + level
+            itemsToShow = itemsToShow + level
         }
         wrongAnswers = 0
         
