@@ -11,3 +11,5 @@ The further you go in levels, the more Decepticons show up, and might give you h
 The Decepticon camoflage is buggy so at the beginning of every level, their camoflage flashes. This way you can easily find them. 
 
 This works on iPhone and iPad.  Currently, the game scene is formatted for iPhone. I will be making it so it will show the correct size depending on the device. 
+
+![image](https://github.com/user-attachments/assets/62b8a2f1-b55e-41b3-966c-fc7c5e1932b3)
