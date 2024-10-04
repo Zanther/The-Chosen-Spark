@@ -15,10 +15,11 @@ class GameScene: SKScene {
     var wrongAnswers = 0
     let scoreLabel = SKLabelNode(fontNamed: "Menlo-Bold")
     let levelLabel = SKLabelNode(fontNamed: "Menlo-Bold")
-    var instructionLabel = SKLabelNode(fontNamed: "Menlo-Bold")
+//    var instructionLabel = SKLabelNode(fontNamed: "Menlo-Bold")
+    var instructionLabel = SKLabelNode()
+    
     var score = 0 {
         didSet {
-            instructionLabel.text = "Rescue the Autobot hidden among the disguised Decepticons!"
             scoreLabel.text = "Score: \(score)"
             levelLabel.text = "Level: \(level)"
         }
@@ -30,12 +31,12 @@ class GameScene: SKScene {
     var timeLabel = SKLabelNode(fontNamed: "Menlo-Bold")
     var isGameRunning = true
     var restartLabel = SKLabelNode(fontNamed: "Menlo-Bold")
-    var xOffset = -180
-    var yOffset = 0
-    var gridX = 9
-    var gridY = 4
     
     override func sceneDidLoad() {
+        let scoreLabelPosition = isDeviceAniPhone() ? CGPoint(x:-140, y:275) : CGPoint(x:-100, y:110)
+        let levelLabelPosition = isDeviceAniPhone() ? CGPoint(x:-110, y:295) : CGPoint(x:-145, y:110)
+        let timeLabelPosition = isDeviceAniPhone() ? CGPoint(x:100, y:275) : CGPoint(x:155, y:110)
+        let instructionLabelPosition = isDeviceAniPhone() ? CGPoint(x:-140, y:260) : CGPoint(x:-175, y:105)
         
         let background = SKSpriteNode(imageNamed: "background-metal")
         background.name = "background"
@@ -47,34 +48,35 @@ class GameScene: SKScene {
         background.addChild(bgMusic)
         
         scoreLabel.fontSize = 12
-//        scoreLabel.position = CGPoint(x:-350, y:200)
-        scoreLabel.position = CGPoint(x:-140, y:275)
+        scoreLabel.position = scoreLabelPosition
         scoreLabel.zPosition = 1
         scoreLabel.horizontalAlignmentMode = .left
         
         levelLabel.fontSize = 12
-        levelLabel.position = CGPoint(x:-110, y:295)
+        levelLabel.position = levelLabelPosition
         levelLabel.zPosition = 1
         scoreLabel.horizontalAlignmentMode = .left
         
-        timeLabel.fontSize = 42
-        timeLabel.position = CGPoint(x:120, y:275)
-        timeLabel.horizontalAlignmentMode = .right
+        timeLabel.fontSize = isDeviceAniPhone() ? 42 : 20
+        timeLabel.position = timeLabelPosition
+        timeLabel.horizontalAlignmentMode = .left
         timeLabel.zPosition = 1
         
-        instructionLabel.fontSize = 12
-        instructionLabel.position = CGPoint(x:-140, y:230)
-        instructionLabel.zPosition = 1
-        instructionLabel.horizontalAlignmentMode = .left
-        instructionLabel.numberOfLines = 0
-        instructionLabel.lineBreakMode = .byWordWrapping
-        instructionLabel.preferredMaxLayoutWidth = UIScreen.main.bounds.width/1.5
+        instructionLabel = SKLabelMultiLineNode(text: "Rescue the Autobot hidden among the disguised Decepticons!",
+                                                fontName: "Menlo-Bold",
+                                                fontSize: isDeviceAniPhone() ? 12 : 10,
+                                                hAlignment: .left,
+                                                vAlignment: .top,
+                                                labelWidth: UIScreen.main.bounds.width/1.5,
+                                                position: instructionLabelPosition,
+                                                zPosition: 1)
+        
         background.addChild(instructionLabel)
         background.addChild(scoreLabel)
         background.addChild(levelLabel)
         background.addChild(timeLabel)
         
-        print("Max Width", UIScreen.main.bounds.maxX, instructionLabel.text as Any)
+        print("Max Width", UIScreen.main.bounds.width/1.5, instructionLabel.text as Any)
 
         createGrid()
         createLevel(withDelay: 2.0)
@@ -82,36 +84,55 @@ class GameScene: SKScene {
         score = 0
     }
     
-    func createSKLabelWithMultipleLines (with textString: String, with labelName: String) -> SKLabelNode {
-        guard let label = self.childNode(withName: labelName) as? SKLabelNode else { return SKLabelNode(fontNamed: "Menlo-Bold")}
-        label.fontName = "Menlo-Bold"
-        label.text = textString
-        label.lineBreakMode = NSLineBreakMode.byWordWrapping
-        label.numberOfLines = 0
-        label.preferredMaxLayoutWidth = UIScreen.main.bounds.maxX
-//        print("Max Width", UIScreen.main.bounds.maxX, label.text)
+    func isDeviceAniPhone() -> Bool {
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            return true
+        }
+        return false
+    }
+    
+    func createMultiLineLabelNode (from node: SKLabelNode,
+                                   with textString: String,
+                                   nodeWidth: CGFloat,
+                                   fontName: String,
+                                   fontSize: CGFloat,
+                                   hAlignment: SKLabelHorizontalAlignmentMode,
+                                   vAlignment: SKLabelVerticalAlignmentMode,
+                                   position: CGPoint,
+                                   zPosition: CGFloat) -> SKLabelNode {
         
-        return label
+        let multiLineLabelNode = node
+        
+        multiLineLabelNode.fontName = fontName
+        multiLineLabelNode.text = textString
+        multiLineLabelNode.lineBreakMode = .byWordWrapping
+        multiLineLabelNode.numberOfLines = 0
+        multiLineLabelNode.preferredMaxLayoutWidth = nodeWidth
+        multiLineLabelNode.fontSize = fontSize
+
+        return node
     }
     
     func createGrid() {
-        if UIDevice.current.userInterfaceIdiom == .phone {
-            xOffset = -200 /*-Int(UIScreen.main.bounds.width / 7)*/
-            yOffset = -575 // -Int(UIScreen.main.bounds.height / 1.75)
+        let xOffset = isDeviceAniPhone() ? -200 : -323
+        let yOffset = isDeviceAniPhone() ? -575 : -220
+        let gridX = isDeviceAniPhone() ? 9 : 7
+        let gridY = isDeviceAniPhone() ? 4 : 11
+        
+        if isDeviceAniPhone() {
             print("iPhone", "xoffset", xOffset, "yoffset", yOffset)
         } else {
-            xOffset = -323
-            yOffset = -220
-            gridX = 7
-            gridY = 11
+            print("iPad", "xoffset", xOffset, "yoffset", yOffset)
         }
         
         for row in 0 ..< gridX {
             for col in 0 ..< gridY {
+                let iPhonePosition = CGPoint(x: xOffset + (col * 130), y: yOffset + (row * 120))
+                let iPadPosition = CGPoint(x: xOffset + (col * 64), y: yOffset + (row * 60))
                 let item = SKSpriteNode(imageNamed: "autobot_off")
-                item.position = CGPoint(x: xOffset + (col * 130), y: yOffset + (row * 120))
-//                item.position = CGPoint(x: xOffset + (col * 64), y: yOffset + (row * 60))
-                item.setScale(1.25)
+                let scale = isDeviceAniPhone() ? 1.25 : 1.00
+                item.position = isDeviceAniPhone() ? iPhonePosition : iPadPosition
+                item.setScale(scale)
                 addChild(item)
             }
         }
