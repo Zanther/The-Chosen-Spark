@@ -297,7 +297,7 @@ class GameScene: SKScene {
             }
             
             let timePassed = currentTime - startTime
-            let remainingTime = Int(ceil(30 - timePassed))
+            let remainingTime = Int(ceil(10 - timePassed))
             timeLabel.text = "\(remainingTime)"
             timeLabel.alpha = 1
             
@@ -313,9 +313,9 @@ class GameScene: SKScene {
                 addChild(gameOver)
 
                 restartLabel.zPosition = 15
-                restartLabel.text = "Game will Restart in: \(restartCountdown)"
+                restartLabel.text = "The game will restart in 20 Seconds"
                 restartLabel.fontSize = 15
-                restartLabel.position = CGPoint(x: gameOver.anchorPoint.x, y: gameOver.anchorPoint.y + 100)
+                restartLabel.position = CGPoint(x: gameOver.anchorPoint.x, y: gameOver.anchorPoint.y - 100)
                 gameOver.addChild(restartLabel)
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 18) {
