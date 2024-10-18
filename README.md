@@ -9,3 +9,6 @@ If you end up tapping on all the Decepticons before finding the Autobot, you wil
 The more rounds you complete, the higher your level will go, and the more Decepticons will appear. Think you've got what it takes?
 
 ![image](https://github.com/user-attachments/assets/62b8a2f1-b55e-41b3-966c-fc7c5e1932b3)
+
+
+This is a fan game (WIP) that I made while learning SpriteKit and GameKit. It is only for educational use and not for profit in any way, shape, or form. Autobots and Decepticons are copyrighted properties of Hasbro and Takara Tomy. 
